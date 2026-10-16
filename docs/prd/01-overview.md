@@ -31,7 +31,7 @@ Not applicable to this document. Product positioning belongs to SARE's product P
 - **Go-live profile (later):** hosting target to be chosen ([Q-1](05-assumptions-risks-questions.md#q-1)). The code is built to move: repository layer over the DB, Redis treated as disposable, no host-specific features.
 - **First vertical slice:** simulator -> ingest -> store -> rule -> alert row -> `GET /devices/latest`. This proves the riskiest path before AI and summaries.
 
-## Groundwork (settle before or during M0)
+## Groundwork (settle before or during SD1)
 
 - Accounts: Render, Turso, a Redis host, Groq, GitHub (repo and CI). Owner: backend team.
 - **Firmware contract workshop** with the hardware team (batching, retry rules, boot id and sequence number, time sync, TLS approach, raw ADC). Without it the ingest contract is a guess. See [Q-6](05-assumptions-risks-questions.md#q-6), [Q-7](05-assumptions-risks-questions.md#q-7).
@@ -56,11 +56,11 @@ Not applicable to this document. Product positioning belongs to SARE's product P
 
 | Metric | Baseline | Target | Timeframe | How measured |
 |---|---|---|---|---|
-| Reading durability | none | 100% of readings acknowledged with 2xx are in the DB after a forced kill | M1 done | kill-9 test ([A-M1-1](04-requirements.md#a-m1-1)) |
-| Reading to dashboard push latency (p95, service awake) | none | <= 2 s | M4 done | simulator timestamps vs WS receive |
-| Breach to alert row (p95) | none | <= 1 s after commit | M2 done | integration test |
-| Explanation availability | none | 100% of alerts show a template explanation immediately; LLM text for >= 90% within 60 s while within budget | M6 done | alert table, `explanation_source` |
-| Offline detection (service awake) | none | <= 12 min after last reading (10 min threshold + 2 min sweep) | M5 done | simulator stop test |
+| Reading durability | none | 100% of readings acknowledged with 2xx are in the DB after a forced kill | SD2 done | kill-9 test ([A-SD2-1](04-requirements.md#a-sd2-1)) |
+| Reading to dashboard push latency (p95, service awake) | none | <= 2 s | SD5 done | simulator timestamps vs WS receive |
+| Breach to alert row (p95) | none | <= 1 s after commit | SD3 done | integration test |
+| Explanation availability | none | 100% of alerts show a template explanation immediately; LLM text for >= 90% within 60 s while within budget | AI2 done (G3) | alert table, `explanation_source` |
+| Offline detection (service awake) | none | <= 12 min after last reading (10 min threshold + 2 min sweep) | SD6 done | simulator stop test |
 | Free-tier headroom | none | Turso writes <= 80% of 10M/month at pilot device count; LLM tokens <= 80% of daily free limit | continuous | write meter, `llm_usage_daily` |
 
 Primary metric: durability plus alert latency (this is a safety-adjacent product). Guardrails: false-offline alerts per device per week <= 1 (while the service is awake); LLM-caused alert delay = 0 (AI is never on the alert path).

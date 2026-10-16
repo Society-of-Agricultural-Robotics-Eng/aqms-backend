@@ -43,9 +43,9 @@ Date checked: 2026-10-16 unless stated.
 | <a id="r-1"></a>R-1 | Free-tier limits (Turso writes, Groq tokens) hit sooner than estimated | High | Medium | Spikes S1 and S5, meters, degraded mode, template fallback | Backend |
 | <a id="r-2"></a>R-2 | MQ135 NH3 estimates are inaccurate, causing false alarms or missed danger | High | High | Label as estimate, calibration workflow, warm-up handling, advisor review, consider a dedicated NH3 sensor | SARE hardware, advisor |
 | <a id="r-3"></a>R-3 | Service sleeps while all devices are offline | High (dev) | Medium | Pinger, boot catch-up, always-on host at go-live | Backend |
-| <a id="r-4"></a>R-4 | Firmware contract not agreed, ingest changes late | Medium | High | Workshop in M0, golden payloads, `fw` version gate | Backend, hardware |
+| <a id="r-4"></a>R-4 | Firmware contract not agreed, ingest changes late | Medium | High | Workshop in API1, golden payloads, `fw` version gate | Backend, hardware |
 | <a id="r-5"></a>R-5 | Thresholds not confirmed by a poultry expert | Medium | High | Configurable profiles, advisor sign-off before pilot | SARE lead |
-| <a id="r-6"></a>R-6 | Dev-to-Postgres migration harder than expected | Medium | Medium | Dual-dialect CI from M0, portable schema | Backend |
+| <a id="r-6"></a>R-6 | Dev-to-Postgres migration harder than expected | Medium | Medium | Dual-dialect CI from SD1, portable schema | Backend |
 | <a id="r-7"></a>R-7 | Redis free tier unusable with BullMQ | Medium | Medium | Spike S2; fallback Redis Cloud; last resort pg-boss | Backend |
 | <a id="r-8"></a>R-8 | AI advice judged unsafe or wrong | Low to medium | High | Constrained prompts, denylist, human review sample, disclaimers | Backend |
 | <a id="r-9"></a>R-9 | Free accounts suspended or terms change | Medium | Medium | Backups, runbook, Redis disposable | Backend |
@@ -55,16 +55,16 @@ Date checked: 2026-10-16 unless stated.
 
 | ID | Question | Why it matters | Owner / evidence path | Needed by |
 |---|---|---|---|---|
-| <a id="q-1"></a>Q-1 | Where does go-live run, and with what budget? | Decides DB, always-on instance, cost | SARE lead | before M10 |
-| <a id="q-2"></a>Q-2 | Who logs in (farmers, SARE staff), how are accounts created, one farm or many? | Drives auth, scoping, data protection | SARE lead, frontend lead | before M3 |
-| <a id="q-3"></a>Q-3 | Bird type and age: broilers or layers, and who signs off thresholds, including age bands? | Temperature bands, safety of alerts | Poultry advisor | before M2 |
+| <a id="q-1"></a>Q-1 | Where does go-live run, and with what budget? | Decides DB, always-on instance, cost | SARE lead | before OPS4 |
+| <a id="q-2"></a>Q-2 | Who logs in (farmers, SARE staff), how are accounts created, one farm or many? | Drives auth, scoping, data protection | SARE lead, frontend lead | before SD4 |
+| <a id="q-3"></a>Q-3 | Bird type and age: broilers or layers, and who signs off thresholds, including age bands? | Temperature bands, safety of alerts | Poultry advisor | before SD3 |
 | <a id="q-4"></a>Q-4 | Which alert channels beyond the dashboard (SMS, WhatsApp, email)? | Farmers may not watch a dashboard | SARE lead | v1.1 planning |
-| <a id="q-5"></a>Q-5 | Real device count and sampling interval for the pilot? | Write budget, capacity | SARE lead, hardware | before M1 |
-| <a id="q-6"></a>Q-6 | Can firmware batch readings, send `boot_id`, `seq`, relative ages, and buffer while offline? | Ingest contract and durability | Hardware lead | M0 |
-| <a id="q-7"></a>Q-7 | How will firmware do TLS (pinned fingerprint, CA store with NTP, or `setInsecure`)? | Real security of device traffic | Hardware lead | M0 |
+| <a id="q-5"></a>Q-5 | Real device count and sampling interval for the pilot? | Write budget, capacity | SARE lead, hardware | before SD2 |
+| <a id="q-6"></a>Q-6 | Can firmware batch readings, send `boot_id`, `seq`, relative ages, and buffer while offline? | Ingest contract and durability | Hardware lead | API1 |
+| <a id="q-7"></a>Q-7 | How will firmware do TLS (pinned fingerprint, CA store with NTP, or `setInsecure`)? | Real security of device traffic | Hardware lead | API1 |
 | <a id="q-8"></a>Q-8 | Will SARE label NH3 as an estimate, and will MQ135 stay or be replaced by an NH3-specific sensor? | Trust in the headline metric | SARE lead, hardware | before pilot |
-| <a id="q-9"></a>Q-9 | Which languages must the AI support, and who can review them (for example Yoruba)? | LLM quality in local languages is unverified | SARE lead | before M6 |
-| <a id="q-10"></a>Q-10 | Raw data retention: is 90 days right, and who needs history longer? | Storage and write budget | SARE lead | before M7 |
+| <a id="q-9"></a>Q-9 | Which languages must the AI support, and who can review them (for example Yoruba)? | LLM quality in local languages is unverified | SARE lead | before AI2 |
+| <a id="q-10"></a>Q-10 | Raw data retention: is 90 days right, and who needs history longer? | Storage and write budget | SARE lead | before SD7 |
 | <a id="q-11"></a>Q-11 | Which data protection duties apply to farm user data? | Legal compliance | SARE lead, legal | before pilot |
 | <a id="q-12"></a>Q-12 | Which organisation owns hosting accounts and API keys? | Continuity after the developer leaves | SARE lead | before pilot |
 | <a id="q-13"></a>Q-13 | Will automation (fans, heaters) be added later? | Would change the safety bar for alerts | SARE lead | roadmap |
