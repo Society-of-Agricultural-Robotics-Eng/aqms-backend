@@ -83,21 +83,61 @@ Content-Type: application/json
 
 ---
 
-## Roadmap & Milestones
+## Team Roles & Milestones
 
-The project is structured into sequential milestones to prove stability before adding complexity:
+Work is split by role so each person can work independently and converge at defined gates. Full task lists and acceptance criteria are in [`docs/prd/04-requirements.md`](docs/prd/04-requirements.md).
 
-- **M0: Foundations & Spikes** — Project skeleton, dual-dialect Drizzle setup, Render deploy, and capacity spikes.
-- **M1: Device Registry & Durable Ingest** — Device API keys, batch validation, idempotent storage, cold-start safety.
-- **M2: Fault Detection & Alert Lifecycle** — Sensor fault rules, threshold engine, debounce, hysteresis, and template explanations. *(M0–M2 constitute the first vertical slice)*
-- **M3: Auth & Read APIs** — User sessions, RBAC, farm scoping, history and device status endpoints.
-- **M4: Realtime** — Socket.io gateway with farm-scoped event rooms.
-- **M5: Schedulers & Offline Sweeper** — BullMQ queues, offline detection, and recovery reconciler.
-- **M6: AI Explanations** — Tagged knowledge base, token budget router, and Groq worker integration.
-- **M7: Aggregates, Summaries & Retention** — Period/daily summaries and raw reading data pruning.
-- **M8: AI Chat** — Farm-scoped contextual Q&A assistance.
-- **M9: Hardening & Operational Runbooks** — Auditing, backup drills, and chaos/load testing.
-- **M10: Go-Live Migration** — Seamless transition from free tier to dedicated PostgreSQL and always-on instances.
+| Role | Milestones | Branch |
+|---|---|---|
+| **Service Design (SD)** | SD1 Foundations, spikes and ports | `milestone/sd1-foundations-ports` |
+| | SD2 Device registry and durable ingest | `milestone/sd2-device-registry-ingest` |
+| | SD3 Fault detection, rules and alert lifecycle | `milestone/sd3-faults-rules-alerts` |
+| | SD4 Auth, farm scoping and read services | `milestone/sd4-auth-read-services` |
+| | SD5 Realtime | `milestone/sd5-realtime` |
+| | SD6 Scheduler, offline detection and reconciler | `milestone/sd6-scheduler-offline-reconciler` |
+| | SD7 Aggregates, retention and instrumentation | `milestone/sd7-aggregates-retention-instrumentation` |
+| **API Planning & Integration (API)** | API1 Endpoint planning and contract | `milestone/api1-endpoint-planning-contract` |
+| | API2 Frontend integration | `milestone/api2-frontend-integration` |
+| | API3 Hardware integration | `milestone/api3-hardware-integration` |
+| | API4 Documentation and handover | `milestone/api4-docs-handover` |
+| **AI Integration (AI)** | AI1 AI workflow and knowledge base | `milestone/ai1-workflow-knowledge-base` |
+| | AI2 Alert explanation engine | `milestone/ai2-explanation-engine` |
+| | AI3 Narratives and chat | `milestone/ai3-narratives-chat` |
+| **Validation & Testing (QA)** | QA1 Test harness and endpoint verification | `milestone/qa1-test-harness-endpoint-verification` |
+| | QA2 Subsystem verification | `milestone/qa2-subsystem-verification` |
+| | QA3 Full integration test and sign-off | `milestone/qa3-full-integration-test` |
+| **Monitoring & Deployment (OPS)** | OPS1 Backend monitoring | `milestone/ops1-backend-monitoring` |
+| | OPS2 Frontend monitoring | `milestone/ops2-frontend-monitoring` |
+| | OPS3 Operations readiness | `milestone/ops3-operations-readiness` |
+| | OPS4 Go-live and post-launch (conditional on Q-1) | `milestone/ops4-go-live` |
+
+Modules talk to each other only through shared interfaces (ports) with stub implementations, so unfinished work never blocks anyone. See [Ports](docs/prd/04-requirements.md#ports-how-sd-and-ai-work-independently).
+
+### Convergence gates
+
+| Gate | Condition | Unblocks |
+|---|---|---|
+| G0 Contracts frozen | API1 sign-off and SD1 ports published | SD2, SD4, AI1, AI2 |
+| G1 First vertical slice | SD1 + SD2 + SD3 with simulator | QA1, API3 |
+| G2 Frontend-ready | SD4 + SD5 done, QA1 verification passed, API2 shapes agreed | Frontend integration |
+| G3 AI plugged in | AI2 passes evaluation, SD3 and SD6 exist | AI3, real AI engine replaces stubs |
+| G4 Feature complete | SD, AI, API1 to API3 done | QA3, OPS3, OPS4 |
+| G5 Release | QA3 sign-off, OPS1 to OPS3 done, Q-1 decided | OPS4 go-live |
+
+---
+
+## Branching & Merge Workflow
+
+`main` is the reconciliation branch. It must always build, boot (with stubs for unfinished ports) and pass tests.
+
+1. **One long-lived branch per milestone**, named `milestone/<id>-<name>` (table above). Start from `main`; the role that owns the milestone works on it.
+2. **Optional task branches** for parallel work inside a milestone: `task/<task-id>-<name>` (for example `task/sd3-t4-alert-lifecycle`), merged into the milestone branch by pull request.
+3. **Sync often.** Merge `main` into your milestone branch at least daily, and before you start a new task, so conflicts stay small.
+4. **Merge to `main` through a pull request**, when a milestone (or a self-contained part of one) is done or a gate needs it. Another role reviews; the CI must pass. Do not merge a milestone that breaks the build or boots only with real services.
+5. **Contract changes go first.** A change to a shared interface, DTO or event type in `contracts/` is its own small pull request into `main`, reviewed by every role that consumes it. Then implementation branches merge `main` and continue.
+6. **Who edits what.** SD owns core module code. API may make small changes to controllers, DTOs and response shapes in SD modules (SD reviews). AI owns the `ai` and `knowledge` modules. QA and OPS change tests and monitoring configuration, not product code; defects go back to the owning role.
+7. **Database migrations:** one migration per pull request. If two branches add one, regenerate yours after merging `main`.
+8. Delete task branches after merging. Milestone branches stay until the milestone is closed.
 
 ---
 
@@ -108,5 +148,5 @@ Full PRD specifications are located in the [`docs/prd/`](docs/prd/index.md) dire
 - [**01. Overview**](docs/prd/01-overview.md) — Problem statement, target users, goals, non-goals, and success metrics.
 - [**02. Tech Stack & Tools**](docs/prd/02-tech-stack.md) — Tool choices, free tier capacity calculations, and decision records (DR-1 to DR-8).
 - [**03. Architecture**](docs/prd/03-architecture.md) — Functional/non-functional requirements, data schemas, API contracts, and failure handling.
-- [**04. Requirements & Milestones**](docs/prd/04-requirements.md) — Detailed task breakdowns (M0–M10) and acceptance criteria.
+- [**04. Requirements & Milestones**](docs/prd/04-requirements.md) — Roles, ports, convergence gates, and task breakdowns by milestone (SD1–SD7, API1–API4, AI1–AI3, QA1–QA3, OPS1–OPS4) with acceptance criteria.
 - [**05. Assumptions, Risks & Questions**](docs/prd/05-assumptions-risks-questions.md) — Assumption ledger, risk register, and open technical questions.
